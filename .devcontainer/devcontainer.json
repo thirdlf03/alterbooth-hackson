@@ -1,7 +1,10 @@
 {
-  "name": "hackson",
-  "dockerComposeFile": ",./docker-compose.yml",
+  name: "hackson",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
   "service": "app",
+  "workspaceFolder": "/",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -15,11 +18,12 @@
         "dbaeumer.vscode-eslint",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "tiangolo.fastapi",
         "formulahendry.auto-rename-tag",
-        "coenraads.bracket-pair-colorizer-2"
+        "tal7aouy.rainbow-bracket"
       ],
-      "settings": {}
+      "settings": {
+        "extensions.verifySignature": false,
+      }
     }
-  },
+  }
 }
