@@ -1,0 +1,25 @@
+{
+  "name": "hackson",
+  "dockerComposeFile": ",./docker-compose.yml",
+  "service": "app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "mhutchie.git-graph",
+        "oderwat.indent-rainbow",
+        "ritwickdey.LiveServer",
+        "kamikillerto.vscode-colorize",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "tiangolo.fastapi",
+        "formulahendry.auto-rename-tag",
+        "coenraads.bracket-pair-colorizer-2"
+      ],
+      "settings": {}
+    }
+  },
+}

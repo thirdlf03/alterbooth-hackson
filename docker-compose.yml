@@ -1,0 +1,39 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./front:/usr/share/nginx/html
+    networks:
+      - network
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - network
+  python:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    build:
+      context: .
+      dockerfile: ./dockerfile/backend/Dockerfile
+    volumes:
+        - ./backend:/app
+    ports:
+      - "8000:8000"
+  uptime:
+    image: louislam/uptime-kuma:latest
+    ports:
+      - "3001:3001"
+
+networks:
+    network:
+        driver: bridge
+
