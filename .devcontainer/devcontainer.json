@@ -1,10 +1,5 @@
 {
-  name: "hackson",
-  "dockerComposeFile": [
-    "../docker-compose.yml"
-  ],
-  "service": "app",
-  "workspaceFolder": "/",
+  "name": "hackson",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -18,11 +13,10 @@
         "dbaeumer.vscode-eslint",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "formulahendry.auto-rename-tag",
-        "tal7aouy.rainbow-bracket"
+        "formulahendry.auto-rename-tag"
       ],
       "settings": {
-        "extensions.verifySignature": false,
+        "extensions.verifySignature": false
       }
     }
   }
