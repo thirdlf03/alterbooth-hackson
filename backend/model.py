@@ -10,7 +10,7 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-    id_done = Column(Boolean, nullable=False, default=False)
+    is_done = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 class User(Base):
