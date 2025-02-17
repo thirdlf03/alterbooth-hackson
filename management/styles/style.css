@@ -7,7 +7,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-header, footer {
+header {
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
     text-align: center;
