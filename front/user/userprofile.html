@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザープロフィール</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>ユーザープロフィール</h1>
+        <div class="user-info" id="user-info">
+            <img id="user-icon" src="" alt="アイコン">
+            <h2 id="user-name"></h2>
+            <p id="user-message"></p>
+            <button class="edit-button" onclick="editUser()">編集</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userIcon = localStorage.getItem('userIcon');
+            const userName = localStorage.getItem('userName');
+            const userMessage = localStorage.getItem('userMessage');
+
+            if (userIcon) {
+                document.getElementById('user-icon').src = userIcon;
+            }
+            document.getElementById('user-name').innerText = userName;
+            document.getElementById('user-message').innerText = userMessage;
+        });
+
+        function editUser() {
+            window.location.href = 'userpage.html';
+        }
+    </script>
+</body>
+</html>

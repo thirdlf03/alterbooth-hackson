@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-image: url('https://user0514.cdnw.net/shared/img/thumb/PAK76_aoihikarito220150218182340_TP_V.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    max-width: 650px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.8); 
+    padding: 20px;
+    border-radius: 10px;
+    height: 60vh;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.form-group button {
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    align-self: center;
+}
+
+.user-info {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.8); 
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-info img {
+    max-width: 200px;
+    border-radius: 50%;
+}
+
+.user-info h2 {
+    margin: 20px 0;
+    font-size: 28px;
+}
+
+.user-info p {
+    margin: 5px 0;
+}
+
+.edit-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
