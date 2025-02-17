@@ -1,21 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Front Index</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h1>Front Files</h1>
-    <ul>
-        <li><a href="archive/achievement.html">Achievement Level</a></li>
-        <li><a href="board/index.html">Board</a></li>
-        <li><a href="login/index.html">Login</a></li>
-        <li><a href="register/index.html">Register</a></li>
-        <li><a href="management/index.html">Management</a></li>
-        <li><a href="quest/index.html">Quest</a></li>
-        <li><a href="sticker/index.html">Sticker</a></li>
-        <li><a href="user/index.html">User</a></li>
-        <li><a href="user/userprofile.html">User Profile</a></li>
-        <li><a href="ranking/index.html">Ranking</a></li>
-    </ul>
+<header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
+        <nav style="margin: 0;">
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; justify-content: center;">
+                <li style="margin: 0 15px;"><a href="../index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Top Page</a></li>
+                <li style="margin: 0 15px;"><a href="../archive/achievement.html" style="color: #fff; text-decoration: none; font-size: 18px;">Achievement Level</a></li>
+                <li style="margin: 0 15px;"><a href="../board/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Board</a></li>
+                <li style="margin: 0 15px;"><a href="../management/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Management</a></li>
+                <li style="margin: 0 15px;"><a href="../quest/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Quest</a></li>
+                <li style="margin: 0 15px;"><a href="../user/userprofile.html" style="color: #fff; text-decoration: none; font-size: 18px;">User Profile</a></li>
+                <li style="margin: 0 15px;"><a href="../ranking/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Ranking</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <p>welcome</p>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            const userId = getCookie('user_id');
+            if (!userId) {
+                window.location.href = '/login/index.html';
+            }
+        });
+    </script>
 </body>
 </html>

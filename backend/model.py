@@ -14,6 +14,8 @@ class User(Base):
     email = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
     point = Column(Integer, nullable=False, default=0)
+    icon = Column(String(255), nullable=True)
+    profile = Column(String(255), nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     tasks = relationship("Task", back_populates="user")  # Relationship to Task

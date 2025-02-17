@@ -31,25 +31,43 @@ class UserBase(BaseModel):
     email: str
     
 
-class UserCreate(UserBase):
-    password: str # Added password for user creation
-    point: Optional[int] = 0
-    
+class UserCreate(BaseModel):
+    email: str
+    password: str
 
 class UserUpdate(UserBase):
     name: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
     point: Optional[int] = None
-    
+
+class UserProfile(BaseModel):
+    id: int
+    icon: str
+    name: str
+    profile: str
+
+class UserResponse(BaseModel):
+    id: int
+    name: Optional[str]
+    point: Optional[int]
+
+
+    class Config:
+        orm_mode = True
+
+class UserPoint(BaseModel):
+    id: int
+    point: int
 
 class User(UserBase):
     id: int
-    password : str
+    email: str
+    name: str
     point: int
+    icon: str
+    profile: str
     created_at: datetime.datetime
-    tasks: List[Task] = []  # Include related tasks in the User model
-    
 
     class Config:
         orm_mode = True

@@ -5,49 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ユーザーページ</title>
     <link rel="stylesheet" href="styles/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>ユーザーページ</h1>
+        <form id="profile-form">
         <div class="form-group">
             <label for="icon">アイコン:</label>
             <input type="file" id="icon" accept="image/*">
         </div>
         <div class="form-group">
-            <label for="username">ユーザー名:</label>
-            <input type="text" id="username" placeholder="ユーザー名を入力">
+            <label for="name">ユーザー名:</label>
+            <input type="text" id="name" placeholder="ユーザー名を入力">
         </div>
         <div class="form-group">
-            <label for="message">一言:</label>
-            <input type="text" id="message" placeholder="一言を入力">
+            <label for="profile">一言:</label>
+            <input type="text" id="profile" placeholder="一言を入力">
         </div>
         <div class="form-group">
-            <button onclick="registerUser()">登録</button>
+            <button type="submit">登録</button>
         </div>
+        </form>
     </div>
 
     <script>
-        function registerUser() {
-            const iconInput = document.getElementById('icon');
-            const username = document.getElementById('username').value;
-            const message = document.getElementById('message').value;
+        $(document).ready(function() {
+            $('#profile-form').on('submit', function(event) {
+                event.preventDefault(); // Prevent the form from submitting the traditional way
 
-            if (iconInput.files && iconInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    localStorage.setItem('userIcon', e.target.result);
-                    localStorage.setItem('userName', username);
-                    localStorage.setItem('userMessage', message);
-                    window.location.href = 'userprofile.html';
-                }
-                reader.readAsDataURL(iconInput.files[0]);
-            } else {
-                localStorage.setItem('userIcon', '');
-                localStorage.setItem('userName', username);
-                localStorage.setItem('userMessage', message);
-                window.location.href = 'userprofile.html';
+                var icon = $('#icon').val();
+                var name = $('#name').val();
+                var profile = $('#profile').val();
+                var userId = getCookie('user_id'); // Retrieve the user_id from the cookie
+
+                $.ajax({
+                    url: 'http://localhost:8000/profile',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ id: userId, icon: icon, name: name, profile: profile }),
+                    success: function(response) {
+                        window.location.href = '/user/userprofile.html';
+                    },
+                    error: function(xhr, status, error) {
+                        alert('登録に失敗しました');
+                    }
+                });
+            });
+
+            function getCookie(name) {
+                var value = "; " + document.cookie;
+                var parts = value.split("; " + name + "=");
+                if (parts.length === 2) return parts.pop().split(";").shift();
             }
-        }
+        });
     </script>
 </body>
 </html>
