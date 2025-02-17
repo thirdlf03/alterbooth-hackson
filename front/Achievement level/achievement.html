@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>達成度</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <header>
+        <h1>達成度</h1>
+    </header>
+    <main>
+        <section>
+            <h2>進捗状況</h2>
+            <div class="progress-container">
+                <div class="progress-box">
+                    <div class="circular-progress" data-progress="75">
+                        <div class="inner-circle"></div>
+                        <div class="number">75%</div>
+                    </div>
+                    <p class="goal-name">テスト</p>
+                    <button class="reset-button">リセット</button>
+                </div>
+                <div class="progress-box">
+                    <div class="circular-progress" data-progress="50">
+                        <div class="inner-circle"></div>
+                        <div class="number">50%</div>
+                    </div>
+                    <p class="goal-name">英語の勉強</p>
+                    <button class="reset-button">リセット</button>
+                </div>
+                <div class="progress-box">
+                    <div class="circular-progress" data-progress="25">
+                        <div class="inner-circle"></div>
+                        <div class="number">25%</div>
+                    </div>
+                    <p class="goal-name">明日までに掃除をする</p>
+                    <button class="reset-button">リセット</button>
+                </div>
+                <div class="progress-box">
+                    <div class="circular-progress" data-progress="90">
+                        <div class="inner-circle"></div>
+                        <div class="number">90%</div>
+                    </div>
+                    <p class="goal-name">目標4</p>
+                    <button class="reset-button">リセット</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.circular-progress');
+
+            progressBars.forEach(bar => {
+                const progress = bar.getAttribute('data-progress');
+                bar.style.background = `conic-gradient(#76c7c0 ${progress}%, #e0e0e0 ${progress}%)`;
+            });
+
+            const resetButtons = document.querySelectorAll('.reset-button');
+            resetButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('達成度をリセットしますか？')) {
+                        const progressBox = button.closest('.progress-box');
+                        const progressBar = progressBox.querySelector('.circular-progress');
+                        progressBar.setAttribute('data-progress', '0');
+                        progressBar.style.background = 'conic-gradient(#76c7c0 0%, #e0e0e0 0%)';
+                        const number = progressBox.querySelector('.number');
+                        number.textContent = '0%';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
