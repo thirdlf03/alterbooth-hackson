@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>目標管理ページ</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <header>
+        <h1>目標管理ページ</h1>
+    </header>
+    <main>
+        <section>
+            <h2>目標一覧</h2>
+            <ul id="goal-list">
+                <!-- ここに目標のリストを表示します -->
+            </ul>
+        </section>
+        <section>
+            <h2>新しい目標を追加</h2>
+            <form id="goal-form">
+                <input type="text" id="goal-input" placeholder="目標を入力してください" required>
+                <button type="submit">保存</button>
+            </form>
+        </section>
+    </main>
+    <script>
+        document.getElementById('goal-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const goalInput = document.getElementById('goal-input');
+            const goalText = goalInput.value.trim();
+            if (goalText !== '') {
+                addGoal(goalText);
+                goalInput.value = '';
+            }
+        });
+
+        function addGoal(text) {
+            const goalList = document.getElementById('goal-list');
+            const listItem = document.createElement('li');
+            const goalText = document.createElement('span');
+            goalText.textContent = text;
+            listItem.appendChild(goalText);
+
+            const editButton = document.createElement('button');
+            editButton.textContent = '編集';
+            editButton.addEventListener('click', function() {
+                const newText = prompt('目標を編集してください', goalText.textContent);
+                if (newText !== null && newText.trim() !== '') {
+                    goalText.textContent = newText.trim();
+                }
+            });
+            listItem.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '削除';
+            deleteButton.addEventListener('click', function() {
+                if (confirm('本当に削除しますか？')) {
+                    goalList.removeChild(listItem);
+                }
+            });
+            listItem.appendChild(deleteButton);
+
+            goalList.appendChild(listItem);
+        }
+    </script>
+</body>
+</html>
