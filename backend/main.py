@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 import bcrypt
 from db import Base, engine, get_db
 import model
+import math
 from schemas import UserCreate, UserUpdate, User, UserProfile, UserPoint, TaskCreate, TaskUpdate, Task, BoardCreate, BoardUpdate, Board, UserResponse, UserQuest
 
 Base.metadata.create_all(bind=engine)
@@ -144,18 +145,18 @@ def update_task(task_id: int, task: TaskUpdate, db: Session = Depends(get_db)):
     db.refresh(db_task)
     return db_task
 
-# Board CRUD
-@app.post("/boards", response_model=Board)
+@app.post("/boards")
 def create_board(board: BoardCreate, db: Session = Depends(get_db)):
-    db_board = Board(user_id=board.user_id, content=board.content)
+    db_board = model.Board(user_id=board.user_id, content=board.content)
     db.add(db_board)
     db.commit()
     db.refresh(db_board)
     return db_board
 
-@app.get("/boards", response_model=list[Board])
+@app.get("/boards")
 def read_boards(db: Session = Depends(get_db)):
-    return db.query(model.Board).all()
+    boards = db.query(model.Board).options(joinedload(model.Board.user)).order_by(model.Board.created_at.desc()).all()
+    return [{"username": board.user.name, "content": board.content} for board in boards]
 
 @app.put("/boards/{board_id}", response_model=Board)
 def update_board(board_id: int, board: BoardUpdate, db: Session = Depends(get_db)):
@@ -179,11 +180,96 @@ def delete_board(board_id: int, db: Session = Depends(get_db)):
 
 @app.get("/quests/{user_id}")
 def read_quests(user_id: int, db: Session = Depends(get_db)):
-    return db.query(model.UserQuest).join(model.Quest, model.UserQuest.quest_id == model.Quest.id).filter(model.UserQuest.user_id == user_id).all()
+    user_quests = db.query(model.UserQuest).filter(model.UserQuest.user_id == user_id).all()
+    if not user_quests:
+        return db.query(model.Quest).all()
+    return db.query(model.Quest).filter(~model.Quest.id.in_(db.query(model.UserQuest.quest_id).filter(model.UserQuest.user_id == user_id))).all()
 
+@app.get("/quests")
+def read_all_quests(db: Session = Depends(get_db)):
+    return db.query(model.Quest).all()
 
+@app.get("/checkquests/{user_id}")
+def check_quests(user_id: int, db: Session = Depends(get_db)):
+    # Check if the user has at least 3 tasks
+    task_count = db.query(model.Task).filter(model.Task.user_id == user_id).count()
+    has_three_tasks = task_count >= 3
 
+    # Check if the user has at least 3 completed tasks
+    completed_task_count = db.query(model.Task).filter(model.Task.user_id == user_id, model.Task.is_done == True).count()
+    has_three_completed_tasks = completed_task_count >= 3
 
+    # Check if the user has at least one message on the board
+    board_message_count = db.query(model.Board).filter(model.Board.user_id == user_id).count()
+    has_board_message = board_message_count > 0
+
+    # Record the completion status in the user_quests table and update user points
+    user = db.query(model.User).filter(model.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if has_three_tasks:
+        existing_quest = db.query(model.UserQuest).filter(model.UserQuest.user_id == user_id, model.UserQuest.quest_id == 1).first()
+        if not existing_quest:
+            db_user_quest = model.UserQuest(user_id=user_id, quest_id=1, is_done=True)
+            db.add(db_user_quest)
+            user.point += 100
+
+    if has_three_completed_tasks:
+        existing_quest = db.query(model.UserQuest).filter(model.UserQuest.user_id == user_id, model.UserQuest.quest_id == 2).first()
+        if not existing_quest:
+            db_user_quest = model.UserQuest(user_id=user_id, quest_id=2, is_done=True)
+            db.add(db_user_quest)
+            user.point += 100
+
+    if has_board_message:
+        existing_quest = db.query(model.UserQuest).filter(model.UserQuest.user_id == user_id, model.UserQuest.quest_id == 3).first()
+        if not existing_quest:
+            db_user_quest = model.UserQuest(user_id=user_id, quest_id=3, is_done=True)
+            db.add(db_user_quest)
+            user.point += 100
+
+    db.commit()
+
+    return {
+        "has_three_tasks": has_three_tasks,
+        "has_three_completed_tasks": has_three_completed_tasks,
+        "has_board_message": has_board_message
+    }
+
+@app.get("/rate/{user_id}")
+def rate_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(model.User).filter(model.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    total_tasks = db.query(model.Task).filter(model.Task.user_id == user_id).count()
+    completed_tasks = db.query(model.Task).filter(model.Task.user_id == user_id, model.Task.is_done == True).count()
+
+    if total_tasks == 0:
+        completion_percentage = 0
+    else:
+        completion_percentage = math.floor((completed_tasks / total_tasks) * 100)
+
+    db.commit()
+
+    return {
+        "completion_percentage": completion_percentage
+    }
+
+@app.get("/rate")
+def rate_overall(db: Session = Depends(get_db)):
+    total_tasks = db.query(model.Task).count()
+    completed_tasks = db.query(model.Task).filter(model.Task.is_done == True).count()
+
+    if total_tasks == 0:
+        completion_percentage = 0
+    else:
+        completion_percentage = math.floor((completed_tasks / total_tasks) * 100)
+
+    return {
+        "completion_percentage": completion_percentage
+    }
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

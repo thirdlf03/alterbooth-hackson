@@ -37,7 +37,7 @@ CREATE TABLE quests (
 INSERT INTO quests (title, content) VALUES
     ('Quest 1', '目標を3つ設定しよう'),
     ('Quest 2', '目標を3つ完了しよう'),
-    ('Quest 3', '');
+    ('Quest 3', '掲示板にメッセージを投稿しよう');
 
 CREATE TABLE user_quests (
     id INT AUTO_INCREMENT PRIMARY KEY,
