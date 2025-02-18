@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import bcrypt
 from db import Base, engine, get_db
 import model
-from schemas import UserCreate, UserUpdate, User, UserProfile, UserPoint, TaskCreate, TaskUpdate, Task, BoardCreate, BoardUpdate, Board, UserResponse
+from schemas import UserCreate, UserUpdate, User, UserProfile, UserPoint, TaskCreate, TaskUpdate, Task, BoardCreate, BoardUpdate, Board, UserResponse, UserQuest
 
 Base.metadata.create_all(bind=engine)
 
@@ -176,6 +176,14 @@ def delete_board(board_id: int, db: Session = Depends(get_db)):
     db.delete(db_board)
     db.commit()
     return db_board
+
+@app.get("/quests/{user_id}")
+def read_quests(user_id: int, db: Session = Depends(get_db)):
+    return db.query(model.UserQuest).join(model.Quest, model.UserQuest.quest_id == model.Quest.id).filter(model.UserQuest.user_id == user_id).all()
+
+
+
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

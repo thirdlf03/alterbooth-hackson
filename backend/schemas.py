@@ -89,3 +89,17 @@ class Board(BoardBase):
 
     class Config:
         orm_mode = True
+
+class QuestBase(BaseModel):
+    title : str
+    content : str
+
+class UserQuest(BaseModel):
+    id: int
+    user_id: int
+    quest_id: int
+    is_done: bool
+    created_at: datetime.datetime
+
+    class Config:
+        orm_mode = True
