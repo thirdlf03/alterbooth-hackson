@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>掲示板</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .post {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .post-content {
+            white-space: pre-wrap;
+        }
+        .post-username {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
     <header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
@@ -29,7 +46,54 @@
         <div class="posts" id="posts">
         </div>
     </div>
-    <script src="scripts/main.js"></script>
+    <script>
+        function getCookie(name) {
+            let value = "; " + document.cookie;
+            let parts = value.split("; " + name + "=");
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+        $(document).ready(function() {
+            // Fetch board contents
+            $.ajax({
+                url: 'http://localhost:8000/boards',
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json'
+                },
+                success: function(data) {
+                    $('#posts').empty();
+                    data.forEach(function(post) {
+                        $('#posts').append('<div class="post"><div class="post-username">' + post.username + '</div><div class="post-content">' + post.content + '</div></div>');
+                    });
+                },
+                error: function(error) {
+                    console.error('Error fetching boards:', error);
+                }
+            });
+
+            // Post new content
+            $('#post-button').click(function() {
+                const content = $('#post-content').val();
+                var user_id = getCookie('user_id');
+
+                if (content) {
+                    $.ajax({
+                        url: `http://localhost:8000/boards`,
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ content: content, user_id: user_id }),
+                        success: function(data) {
+                            location.reload(); // Reload the page after posting
+                        },
+                        error: function(error) {
+                            console.error('Error posting content:', error);
+                        }
+                    });
+                } else {
+                    alert('投稿内容を入力してください');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-

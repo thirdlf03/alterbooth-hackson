@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>達成度</title>
     <link rel="stylesheet" href="styles/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
@@ -29,32 +30,14 @@
                         <div class="inner-circle"></div>
                         <div class="number">75%</div>
                     </div>
-                    <p class="goal-name">テスト</p>
-                    <button class="reset-button">リセット</button>
+                    <p class="goal-name">自分の達成度</p>
                 </div>
                 <div class="progress-box">
                     <div class="circular-progress" data-progress="50">
                         <div class="inner-circle"></div>
                         <div class="number">50%</div>
                     </div>
-                    <p class="goal-name">英語の勉強</p>
-                    <button class="reset-button">リセット</button>
-                </div>
-                <div class="progress-box">
-                    <div class="circular-progress" data-progress="25">
-                        <div class="inner-circle"></div>
-                        <div class="number">25%</div>
-                    </div>
-                    <p class="goal-name">明日までに掃除をする</p>
-                    <button class="reset-button">リセット</button>
-                </div>
-                <div class="progress-box">
-                    <div class="circular-progress" data-progress="90">
-                        <div class="inner-circle"></div>
-                        <div class="number">90%</div>
-                    </div>
-                    <p class="goal-name">目標4</p>
-                    <button class="reset-button">リセット</button>
+                    <p class="goal-name">アプリ全体の達成度</p>
                 </div>
             </div>
         </section>
@@ -80,6 +63,42 @@
                         number.textContent = '0%';
                     }
                 });
+            });
+
+            // Function to get cookie value by name
+            function getCookie(name) {
+                let value = "; " + document.cookie;
+                let parts = value.split("; " + name + "=");
+                if (parts.length === 2) return parts.pop().split(";").shift();
+            }
+
+            // Get user_id from cookie
+            const userId = getCookie('user_id');
+
+            // Get overall completion percentage
+            $.ajax({
+                url: 'http://localhost:8000/rate',
+                method: 'GET',
+                success: function(data) {
+                    const overallProgressBar = document.querySelector('.progress-box:nth-child(2) .circular-progress');
+                    overallProgressBar.setAttribute('data-progress', data.completion_percentage);
+                    overallProgressBar.style.background = `conic-gradient(#76c7c0 ${data.completion_percentage}%, #e0e0e0 ${data.completion_percentage}%)`;
+                    const overallNumber = document.querySelector('.progress-box:nth-child(2) .number');
+                    overallNumber.textContent = data.completion_percentage + '%';
+                }
+            });
+
+            // Get user completion percentage
+            $.ajax({
+                url: `http://localhost:8000/rate/${userId}`,
+                method: 'GET',
+                success: function(data) {
+                    const userProgressBar = document.querySelector('.progress-box:nth-child(1) .circular-progress');
+                    userProgressBar.setAttribute('data-progress', data.completion_percentage);
+                    userProgressBar.style.background = `conic-gradient(#76c7c0 ${data.completion_percentage}%, #e0e0e0 ${data.completion_percentage}%)`;
+                    const userNumber = document.querySelector('.progress-box:nth-child(1) .number');
+                    userNumber.textContent = data.completion_percentage + '%';
+                }
             });
         });
     </script>
