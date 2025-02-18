@@ -4,30 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ユーザープロフィール</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/profile.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+    <header>
+        <h1>Top Page</h1>
+            <nav>
+                <ul>
+                    <li><a href="../archive/achievement.html">Achievement Level</a></li>
+                    <li><a href="../board/index.html">Board</a></li>
+                    <li><a href="../management/index.html">Management</a></li>
+                    <li><a href="../quest/index.html">Quest</a></li>
+                    <li><a href="../user/userprofile.html">User Profile</a></li>
+                    <li><a href="../ranking/index.html">Ranking</a></li>
+                </ul>
+            </nav>
+    </header>
     <div class="container">
-        <h1>ユーザープロフィール</h1>
         <div class="user-info" id="user-info">
             <img id="user-icon" src="" alt="アイコン">
             <h2 id="user-name"></h2>
             <p id="user-message"></p>
+            <div id="user-stickers"></div>
             <button class="edit-button" onclick="editUser()">編集</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const userIcon = localStorage.getItem('userIcon');
-            const userName = localStorage.getItem('userName');
-            const userMessage = localStorage.getItem('userMessage');
+            var userId = getCookie('user_id'); // Retrieve the user_id from the cookie
 
-            if (userIcon) {
-                document.getElementById('user-icon').src = userIcon;
+            function getStickers(points) {
+                const stickers = [];
+                if (points >= 300) {
+                    stickers.push('assets/sticker1.jpeg');
+                }
+                if (points >= 200) {
+                    stickers.push('assets/sticker2.jpeg');
+                }
+                if (points >= 100) {
+                    stickers.push('assets/sticker3.jpeg');
+                }
+                return stickers;
             }
-            document.getElementById('user-name').innerText = userName;
-            document.getElementById('user-message').innerText = userMessage;
+
+            $.ajax({
+                url: 'http://localhost:8000/users/' + userId,
+                type: 'GET',
+                success: function(response) {
+                    document.getElementById('user-icon').src = response.icon;
+                    document.getElementById('user-name').innerText = response.name;
+                    document.getElementById('user-message').innerText = response.profile;
+
+                    const stickers = getStickers(response.point);
+                    const stickersContainer = document.getElementById('user-stickers');
+                    stickersContainer.innerHTML = '';
+                    stickers.forEach(sticker => {
+                        const img = document.createElement('img');
+                        img.src = sticker;
+                        img.alt = 'sticker';
+                        stickersContainer.appendChild(img);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to fetch user data:', error);
+                }
+            });
+
+            function getCookie(name) {
+                var value = "; " + document.cookie;
+                var parts = value.split("; " + name + "=");
+                if (parts.length === 2) return parts.pop().split(";").shift();
+            }
         });
 
         function editUser() {

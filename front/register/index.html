@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<header>
+    <h1>Register</h1>
+</header>
+<main>
+    <section>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="email">メールアドレス:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">パスワード:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p>すでにアカウントをお持ちの方は <a href="/login">ここからログインできます</a></p>
+    </section>
+</main>
+<script>
+    $(document).ready(function() {
+        $('#register-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            var email = $('#email').val();
+            var password = $('#password').val();
+
+            $.ajax({
+                url: 'http://localhost:8000/users',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ email: email, password: password }),
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function(response) {
+                    alert('アカウント作成に成功しました');
+                    window.location.href = '/user';
+                },
+                error: function(xhr, status, error) {
+                    alert('アカウント作成に失敗しました');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

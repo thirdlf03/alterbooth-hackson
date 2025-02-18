@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front Index</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>クエスト</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="scripts/script.js" defer></script>
 </head>
 <body>
-<header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
+    <header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
         <nav style="margin: 0;">
             <ul style="list-style: none; padding: 0; margin: 0; display: flex; justify-content: center;">
                 <li style="margin: 0 15px;"><a href="../index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Top Page</a></li>
@@ -22,21 +21,19 @@
         </nav>
     </header>
     <main>
-        <p>welcome</p>
+        <section id="quest-list">
+            <h2>クエスト一覧</h2>
+            <ul>
+                <li>他のユーザーとコミュニケーションをとる</li>
+                <li>ステッカーを手に入れる</li>
+                <li>ランキングtop10に入る</li>
+            </ul>
+        </section>
+        <section id="quest-details" style="display: none;">
+            <h2>クエスト詳細</h2>
+            <p id="quest-description">ここにクエストの詳細が表示されます。</p>
+            <button id="start-quest">クエストを開始</button>
+        </section>
     </main>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function getCookie(name) {
-                const value = `; ${document.cookie}`;
-                const parts = value.split(`; ${name}=`);
-                if (parts.length === 2) return parts.pop().split(';').shift();
-            }
-
-            const userId = getCookie('user_id');
-            if (!userId) {
-                window.location.href = '/login/index.html';
-            }
-        });
-    </script>
 </body>
 </html>

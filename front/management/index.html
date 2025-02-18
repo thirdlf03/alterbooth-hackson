@@ -5,10 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>目標管理ページ</title>
     <link rel="stylesheet" href="styles/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .done {
+            text-decoration: line-through;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>目標管理ページ</h1>
+    <header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
+        <nav style="margin: 0;">
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; justify-content: center;">
+                <li style="margin: 0 15px;"><a href="../index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Top Page</a></li>
+                <li style="margin: 0 15px;"><a href="../archive/achievement.html" style="color: #fff; text-decoration: none; font-size: 18px;">Achievement Level</a></li>
+                <li style="margin: 0 15px;"><a href="../board/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Board</a></li>
+                <li style="margin: 0 15px;"><a href="../management/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Management</a></li>
+                <li style="margin: 0 15px;"><a href="../quest/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Quest</a></li>
+                <li style="margin: 0 15px;"><a href="../user/userprofile.html" style="color: #fff; text-decoration: none; font-size: 18px;">User Profile</a></li>
+                <li style="margin: 0 15px;"><a href="../ranking/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Ranking</a></li>
+            </ul>
+        </nav>
     </header>
     <main>
         <section>
@@ -21,34 +37,258 @@
             <h2>新しい目標を追加</h2>
             <form id="goal-form">
                 <input type="text" id="goal-input" placeholder="目標を入力してください" required>
+                <select id="priority-select">
+                    <option value="low">低い</option>
+                    <option value="medium">普通</option>
+                    <option value="high">高い</option>
+                </select>
                 <button type="submit">保存</button>
             </form>
         </section>
     </main>
     <script>
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var userId = getCookie('user_id'); // Retrieve the user_id from the cookie
+
+            $.ajax({
+                url: 'http://localhost:8000/tasks/' + userId,
+                type: 'GET',
+                success: function(response) {
+                    const goalList = document.getElementById('goal-list');
+                    response.forEach(task => {
+                        const listItem = document.createElement('li');
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.checked = task.is_done;
+                        checkbox.addEventListener('change', function() {
+                            $.ajax({
+                                url: `http://localhost:8000/tasks/${task.id}/done`,
+                                type: 'PUT',
+                                success: function() {
+                                    task.is_done = !task.is_done;
+                                    goalText.classList.toggle('done', task.is_done);
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Failed to update task status:', error);
+                                }
+                            });
+                        });
+                        listItem.appendChild(checkbox);
+
+                        const goalText = document.createElement('span');
+                        goalText.textContent = task.name;
+                        if (task.is_done) {
+                            goalText.classList.add('done');
+                        }
+                        listItem.appendChild(goalText);
+
+                        const priorityText = document.createElement('span');
+                        priorityText.textContent = ` (優先度: ${task.priority})`;
+                        listItem.appendChild(priorityText);
+
+                        const goalInput = document.createElement('input');
+                        goalInput.type = 'text';
+                        goalInput.value = task.name;
+                        goalInput.style.display = 'none';
+                        listItem.appendChild(goalInput);
+
+                        const prioritySelect = document.createElement('select');
+                        ['low', 'medium', 'high'].forEach(priority => {
+                            const option = document.createElement('option');
+                            option.value = priority;
+                            option.textContent = priority === 'low' ? '低い' : priority === 'medium' ? '普通' : '高い';
+                            if (task.priority === priority) {
+                                option.selected = true;
+                            }
+                            prioritySelect.appendChild(option);
+                        });
+                        prioritySelect.style.display = 'none';
+                        listItem.appendChild(prioritySelect);
+
+                        const editButton = document.createElement('button');
+                        editButton.textContent = '編集';
+                        editButton.addEventListener('click', function() {
+                            if (editButton.textContent === '編集') {
+                                goalText.style.display = 'none';
+                                priorityText.style.display = 'none';
+                                goalInput.style.display = 'inline';
+                                prioritySelect.style.display = 'inline';
+                                editButton.textContent = '保存';
+                            } else {
+                                const newText = goalInput.value.trim();
+                                const newPriority = prioritySelect.value;
+                                if (newText !== '') {
+                                    $.ajax({
+                                        url: `http://localhost:8000/tasks/${task.id}`,
+                                        type: 'PUT',
+                                        contentType: 'application/json',
+                                        data: JSON.stringify({ name: newText, priority: newPriority }),
+                                        success: function() {
+                                            goalText.textContent = newText;
+                                            priorityText.textContent = ` (優先度: ${newPriority})`;
+                                            goalText.style.display = 'inline';
+                                            priorityText.style.display = 'inline';
+                                            goalInput.style.display = 'none';
+                                            prioritySelect.style.display = 'none';
+                                            editButton.textContent = '編集';
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Failed to update task:', error);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        listItem.appendChild(editButton);
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '削除';
+                        deleteButton.addEventListener('click', function() {
+                            if (confirm('本当に削除しますか？')) {
+                                $.ajax({
+                                    url: `http://localhost:8000/tasks/${task.id}`,
+                                    type: 'DELETE',
+                                    success: function() {
+                                        goalList.removeChild(listItem);
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Failed to delete task:', error);
+                                    }
+                                });
+                            }
+                        });
+                        listItem.appendChild(deleteButton);
+
+                        goalList.appendChild(listItem);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to fetch tasks:', error);
+                }
+            });
+
+        });
+
         document.getElementById('goal-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const goalInput = document.getElementById('goal-input');
+            const prioritySelect = document.getElementById('priority-select');
             const goalText = goalInput.value.trim();
+            const priority = prioritySelect.value;
+            const userId = getCookie('user_id');
             if (goalText !== '') {
-                addGoal(goalText);
-                goalInput.value = '';
+                $.ajax({
+                    url: 'http://localhost:8000/tasks',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        name: goalText,
+                        priority: priority,
+                        is_done: false,
+                        user_id: userId
+                    }),
+                    success: function(response) {
+                        addGoal(response.name, response.priority, response.id, response.is_done);
+                        goalInput.value = '';
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to create task:', error);
+                    }
+                });
             }
         });
 
-        function addGoal(text) {
+        function addGoal(text, priority, id, is_done) {
             const goalList = document.getElementById('goal-list');
             const listItem = document.createElement('li');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = is_done;
+            checkbox.addEventListener('change', function() {
+                $.ajax({
+                    url: `http://localhost:8000/tasks/${id}/done`,
+                    type: 'PUT',
+                    success: function() {
+                        is_done = !is_done;
+                        goalText.classList.toggle('done', is_done);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to update task status:', error);
+                    }
+                });
+            });
+            listItem.appendChild(checkbox);
+
             const goalText = document.createElement('span');
             goalText.textContent = text;
+            if (is_done) {
+                goalText.classList.add('done');
+            }
             listItem.appendChild(goalText);
+
+            const priorityText = document.createElement('span');
+            priorityText.textContent = ` (優先度: ${priority})`;
+            listItem.appendChild(priorityText);
+
+            const goalInput = document.createElement('input');
+            goalInput.type = 'text';
+            goalInput.value = text;
+            goalInput.style.display = 'none';
+            listItem.appendChild(goalInput);
+
+            const prioritySelect = document.createElement('select');
+            ['low', 'medium', 'high'].forEach(p => {
+                const option = document.createElement('option');
+                option.value = p;
+                option.textContent = p === 'low' ? '低い' : p === 'medium' ? '普通' : '高い';
+                if (priority === p) {
+                    option.selected = true;
+                }
+                prioritySelect.appendChild(option);
+            });
+            prioritySelect.style.display = 'none';
+            listItem.appendChild(prioritySelect);
 
             const editButton = document.createElement('button');
             editButton.textContent = '編集';
             editButton.addEventListener('click', function() {
-                const newText = prompt('目標を編集してください', goalText.textContent);
-                if (newText !== null && newText.trim() !== '') {
-                    goalText.textContent = newText.trim();
+                if (editButton.textContent === '編集') {
+                    goalText.style.display = 'none';
+                    priorityText.style.display = 'none';
+                    goalInput.style.display = 'inline';
+                    prioritySelect.style.display = 'inline';
+                    editButton.textContent = '保存';
+                } else {
+                    const newText = goalInput.value.trim();
+                    const newPriority = prioritySelect.value;
+                    if (newText !== '') {
+                        $.ajax({
+                            url: `http://localhost:8000/tasks/${id}`,
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ name: newText, priority: newPriority }),
+                            success: function() {
+                                goalText.textContent = newText;
+                                priorityText.textContent = ` (優先度: ${newPriority})`;
+                                goalText.style.display = 'inline';
+                                priorityText.style.display = 'inline';
+                                goalInput.style.display = 'none';
+                                prioritySelect.style.display = 'none';
+                                editButton.textContent = '編集';
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Failed to update task:', error);
+                            }
+                        });
+                    }
                 }
             });
             listItem.appendChild(editButton);
@@ -57,7 +297,16 @@
             deleteButton.textContent = '削除';
             deleteButton.addEventListener('click', function() {
                 if (confirm('本当に削除しますか？')) {
-                    goalList.removeChild(listItem);
+                    $.ajax({
+                        url: `http://localhost:8000/tasks/${id}`,
+                        type: 'DELETE',
+                        success: function() {
+                            goalList.removeChild(listItem);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Failed to delete task:', error);
+                        }
+                    });
                 }
             });
             listItem.appendChild(deleteButton);
