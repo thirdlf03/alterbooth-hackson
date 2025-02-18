@@ -24,7 +24,8 @@ services:
       - network
   python:
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
     build:

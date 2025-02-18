@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>クエスト</title>
     <link rel="stylesheet" href="styles/style.css">
-    <script src="scripts/script.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
@@ -23,17 +23,59 @@
     <main>
         <section id="quest-list">
             <h2>クエスト一覧</h2>
-            <ul>
-                <li>他のユーザーとコミュニケーションをとる</li>
-                <li>ステッカーを手に入れる</li>
-                <li>ランキングtop10に入る</li>
+            <ul id="quests">
+                <!-- Quests will be loaded here -->
             </ul>
         </section>
-        <section id="quest-details" style="display: none;">
-            <h2>クエスト詳細</h2>
-            <p id="quest-description">ここにクエストの詳細が表示されます。</p>
-            <button id="start-quest">クエストを開始</button>
-        </section>
     </main>
+    <script>
+        $(document).ready(function() {
+            // Function to get cookie value by name
+            function getCookie(name) {
+                let value = "; " + document.cookie;
+                let parts = value.split("; " + name + "=");
+                if (parts.length === 2) return parts.pop().split(";").shift();
+            }
+
+            // Get user_id from cookie
+            const userId = getCookie('user_id');
+
+            if (userId) {
+                // Check quests
+                $.ajax({
+                    url: `http://localhost:8000/checkquests/${userId}`,
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json'
+                    },
+                    success: function(data) {
+                        console.log('Quest check:', data);
+                        // Retrieve quest list
+                        $.ajax({
+                            url: `http://localhost:8000/quests/${userId}`,
+                            method: 'GET',
+                            headers: {
+                                'accept': 'application/json'
+                            },
+                            success: function(quests) {
+                                $('#quests').empty();
+                                quests.forEach(function(quest) {
+                                    $('#quests').append('<li>' + quest.title + ': ' + quest.content + '</li>');
+                                });
+                            },
+                            error: function(error) {
+                                console.error('Error retrieving quests:', error);
+                            }
+                        });
+                    },
+                    error: function(error) {
+                        console.error('Error checking quests:', error);
+                    }
+                });
+            } else {
+                console.error('User ID not found in cookies');
+            }
+        });
+    </script>
 </body>
 </html>
