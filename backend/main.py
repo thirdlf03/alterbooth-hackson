@@ -271,5 +271,23 @@ def rate_overall(db: Session = Depends(get_db)):
         "completion_percentage": completion_percentage
     }
 
+@app.post("/init")
+def init(db: Session = Depends(get_db)):
+    quests = [
+        {"title": "Quest 1", "content": "目標を3つ設定しよう"},
+        {"title": "Quest 2", "content": "目標を3つ完了しよう"},
+        {"title": "Quest 3", "content": "掲示板にメッセージを投稿しよう"}
+    ]
+
+    for quest in quests:
+        existing_quest = db.query(model.Quest).filter_by(title=quest["title"]).first()
+        if not existing_quest:
+            db_quest = model.Quest(title=quest["title"], content=quest["content"])
+            db.add(db_quest)
+
+    db.commit()
+    return {"message": "Initialization complete"}
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

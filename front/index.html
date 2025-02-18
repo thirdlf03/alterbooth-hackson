@@ -1,28 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front Index</title>
+    <title>フロントインデックス</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        .welcome-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .feature-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+        }
+        .feature-box h3 {
+            margin-top: 0;
+        }
+    </style>
 </head>
 <body>
-<header style="background-color: #333; color: #fff; padding: 20px 0; text-align: center;">
-        <nav style="margin: 0;">
-            <ul style="list-style: none; padding: 0; margin: 0; display: flex; justify-content: center;">
-                <li style="margin: 0 15px;"><a href="../index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Top Page</a></li>
-                <li style="margin: 0 15px;"><a href="../archive/achievement.html" style="color: #fff; text-decoration: none; font-size: 18px;">Achievement Level</a></li>
-                <li style="margin: 0 15px;"><a href="../board/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Board</a></li>
-                <li style="margin: 0 15px;"><a href="../management/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Management</a></li>
-                <li style="margin: 0 15px;"><a href="../quest/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Quest</a></li>
-                <li style="margin: 0 15px;"><a href="../user/userprofile.html" style="color: #fff; text-decoration: none; font-size: 18px;">User Profile</a></li>
-                <li style="margin: 0 15px;"><a href="../ranking/index.html" style="color: #fff; text-decoration: none; font-size: 18px;">Ranking</a></li>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">トップページ</a></li>
+                <li><a href="management/index.html">目標管理</a></li>
+                <li><a href="archive/achievement.html">達成度</a></li>
+                <li><a href="quest/index.html">クエスト</a></li>
+                <li><a href="ranking/index.html">ランキング</a></li>
+                <li><a href="board/index.html">掲示板</a></li>
+                <li><a href="user/userprofile.html">プロフィール</a></li>
             </ul>
         </nav>
     </header>
     <main>
-        <p>welcome</p>
+        <p class="welcome-message">達成度トラッカーへようこそ！</p>
+        <div class="features">
+            <div class="feature-box">
+                <h3>進捗を追跡</h3>
+                <p>タスクの完了状況を監視し、目標を達成しましょう。</p>
+            </div>
+            <div class="feature-box">
+                <h3>コミュニティに参加</h3>
+                <p>掲示板で他のユーザーと交流し、達成を共有しましょう。</p>
+            </div>
+            <div class="feature-box">
+                <h3>報酬を獲得</h3>
+                <p>クエストを完了してポイントを獲得し、ランキングを上げましょう。</p>
+            </div>
+        </div>
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
